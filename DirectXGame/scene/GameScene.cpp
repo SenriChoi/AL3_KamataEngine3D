@@ -3,12 +3,14 @@
 #include <cassert>
 #include <ImGuiManager.h>
 #include <PrimitiveDrawer.h>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete sprite_;
 	delete model_;
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -25,6 +27,9 @@ void GameScene::Initialize() {
 	audio_->PlayWave(soundDateHandle_);
 	voiceHandle_ = audio_->PlayWave(soundDateHandle_, true);
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+	debugCamera_ = new DebugCamera(1280, 760);
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 }
 
 void GameScene::Update() { 
@@ -32,6 +37,7 @@ void GameScene::Update() {
 	position.x += 2.0f;
 	position.y += 1.0f;
 
+	debugCamera_->Update();
 	sprite_->SetPosition(position);
 
 	if (input_->TriggerKey(DIK_SPACE)) {
@@ -57,6 +63,7 @@ void GameScene::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
+
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);
@@ -76,14 +83,17 @@ void GameScene::Draw() {
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
+
+	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
+//	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
+	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
 
 #pragma endregion
 
