@@ -1,5 +1,8 @@
 #include "Player.h"
 
+Player::Player(){};
+
+Player::~Player(){};
 
 void Player::Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection) {
 	assert(model);

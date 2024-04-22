@@ -7,7 +7,8 @@
 
 class Player {
 public:
-
+	Player();
+	~Player();
 	void Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection);
 
 	void Update();
