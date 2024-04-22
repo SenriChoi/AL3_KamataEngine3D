@@ -47,15 +47,17 @@ void GameScene::Update() {
 			voiceHandle_ = audio_->PlayWave(soundDateHandle_,true);
 		}
 	}
-	ImGui::Begin("Debug1");
+	
 #ifdef _DEBUG
+	ImGui::Begin("Debug1");
 	ImGui::Text("Kamata Tarou %d.%d.%d", 2050, 12, 31);
 	ImGui::InputFloat3("InputFloat3", inputFloat3);
 	ImGui::SliderFloat3("InputFloat3", inputFloat3, 0.0f, 1.0f);
-	ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();	
+	ImGui::End();
 #endif // DEBUG
 
-	ImGui::End();
+
 }
 
 void GameScene::Draw() {
