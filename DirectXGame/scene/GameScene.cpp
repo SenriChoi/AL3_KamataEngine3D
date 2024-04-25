@@ -54,7 +54,6 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
 
 	/// <summary>
