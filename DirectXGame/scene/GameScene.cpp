@@ -2,6 +2,10 @@
 #include "TextureManager.h"
 #include <cassert>
 
+
+
+
+
 GameScene::GameScene() {
 
 }
@@ -9,9 +13,28 @@ GameScene::GameScene() {
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
+	for (WorldTransform* worldTransformBlock : worldTransformBlock_) {
+	
+	delete worldTransformBlock;
+	}
+	worldTransformBlock_.clear();
 }
 
 void GameScene::Initialize() {
+	//要素数
+	const uint32_t kNumBlockHorizontal = 20;
+	//ブロック1個分の横幅
+	const float kBlockWidth = 2.0f;
+	//要素数を変更する
+	worldTransformBlock_.resize(kNumBlockHorizontal);
+
+	//キューブの生成
+	for (uint32_t i = 0; i < kNumBlockHorizontal; ++i) {
+		worldTransformBlock_[i] = new WorldTransform();
+		worldTransformBlock_[i]->Initialize();
+		worldTransformBlock_[i]->translation_.x = kBlockWidth*i;
+		worldTransformBlock_[i]->translation_.y = 0.0f;
+	}
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -30,7 +53,11 @@ void GameScene::Initialize() {
 
 }
 
-void GameScene::Update() { player_->Update(); }
+void GameScene::Update() { player_->Update(); 
+	for (WorldTransform* worldTransformBlock : worldTransformBlock_) {
+		worldTransformBlock->matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	}
+}
 
 void GameScene::Draw() {
 
