@@ -3,5 +3,4 @@ class WorldTransformEx {
 public:
 	WorldTransform*  matWorld_;
 
-
 };
