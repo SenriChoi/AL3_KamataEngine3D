@@ -76,7 +76,7 @@ static Matrix4x4 MakeRotateZMatrix(float radian) {
 	result.m[0][1] = std::sin(radian);
 	result.m[1][0] = -1 * std::sin(radian);
 	result.m[1][1] = std::cos(radian);
-
+	 
 	return result;
 };
 
