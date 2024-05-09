@@ -15,10 +15,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle, ViewProjection* vi
 
 
 void Player::Update() {
-	worldTransform_.TransferMatrix();
-	\\worldTransformBlock->matWorld_ = MakeAffineMatrix(
-	worldTransform_.scale_,worldTransform_.rotation_,worldTransform_.translation_
-	);
+worldTransform_.TransferMatrix();
 
 }
 

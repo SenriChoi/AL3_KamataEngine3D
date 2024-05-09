@@ -13,8 +13,8 @@ GameScene::GameScene() {
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
+	//delete block;
 	for (WorldTransform* worldTransformBlock : worldTransformBlock_) {
-	
 	delete worldTransformBlock;
 	}
 	worldTransformBlock_.clear();
@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	// テクスチャ読み込む
-	textureHandle_ = TextureManager::Load("uvChecker.png");
+	textureHandle_ = TextureManager::Load("cube/cube.png");
 	//３Dモデルの生成
 	model_ = Model::Create();
 	// ワールド、ビューの初期化
@@ -81,6 +81,9 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
+	for (WorldTransform* worldTransformBlock : worldTransformBlock_) {
+		model_->Draw(*worldTransformBlock, viewProjection_);
+	}
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
 

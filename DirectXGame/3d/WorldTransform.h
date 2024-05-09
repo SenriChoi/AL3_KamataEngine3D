@@ -31,7 +31,7 @@ public:
 	WorldTransform() = default;
 	~WorldTransform() = default;
 
-	void UpdateMatrix();
+	
 
 	/// <summary>
 	/// 初期化
@@ -40,6 +40,9 @@ public:
 	/// <summary>
 	/// 定数バッファ生成
 	/// </summary>
+	/// 更新
+	void UpdateMatrix();
+	/// 
 	void CreateConstBuffer();
 	/// <summary>
 	/// マッピングする
