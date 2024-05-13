@@ -1,12 +1,9 @@
 #pragma once
-#include "Vector3.h"
-#include "Matrix4x4.h"
-#include <assert.h>
+
 #include <cmath>
+#include <math.h>
 
-class Matrix4x4Math {
-
-};
+class Matrix4x4Math {};
 
 // 積
 static Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
@@ -76,17 +73,18 @@ static Matrix4x4 MakeRotateZMatrix(float radian) {
 	result.m[0][1] = std::sin(radian);
 	result.m[1][0] = -1 * std::sin(radian);
 	result.m[1][1] = std::cos(radian);
-	 
+
 	return result;
 };
 
 static Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 result = {};
+
 	Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
 	Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
 	Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
 
-	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
+	Matrix4x4 rotateXYZMatrix = Multiply(Multiply(rotateXMatrix, rotateYMatrix), rotateZMatrix);
 
 	result = Multiply(Multiply(MakeScaleMatrix(scale), rotateXYZMatrix), MakeTranslateMatrix(translate));
 
