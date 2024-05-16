@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Player.h"
+#include "Skydome.h"
 #include "vector"
 #include "DebugCamera.h"
 /// <summary>
@@ -52,6 +53,7 @@ private: // メンバ変数
 	uint32_t textureHandle_ = 0;
 	//３D モデル
 	Model* model_ = nullptr;
+	Model* modelSkydemo_ = nullptr;
 
 	//WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
@@ -59,7 +61,7 @@ private: // メンバ変数
 
 	//自キャラ
 	Player* player_ = nullptr;
-
+	Skydome*skydemo_ = nullptr;
 	//DEbugcamera
 	bool isDebugCameraActive_ = false;
 

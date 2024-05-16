@@ -1,6 +1,5 @@
 #include "GameScene.h"
 #include "TextureManager.h"
-
 #include <cassert>
 
 
@@ -22,6 +21,7 @@ GameScene::~GameScene() {
 		worldTransformBlock_.clear();
 	}
 	delete debugCamera_;
+	delete skydemo_;
 }
 
 void GameScene::Initialize() {
@@ -63,13 +63,20 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("cube/cube.jpg");
 	// ３Dモデルの生成
 	model_ = Model::Create();
+	modelSkydemo_ = Model::CreateFromOBJ("skydome", true);
+
+
+	skydemo_ = new Skydome;
 	// ワールド、ビューの初期化
 	/*worldTransform_.Initialize();*/
+	viewProjection_.farZ=5000;
 	viewProjection_.Initialize();
+
 	// player生成+初期化
 	player_ = new Player();
 	player_->Initialize(/*model_, textureHandle_, &viewProjection_*/);
 
+	skydemo_->Initialize(modelSkydemo_, &viewProjection_);
 	// ブロック生成
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
@@ -142,6 +149,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	/// 
+	skydemo_->Draw();
 	for (std::vector<WorldTransform*>& worldTransforBlockLine : worldTransformBlock_) {
 		for (WorldTransform* worldTransformBlock : worldTransforBlockLine) {
 			if (!worldTransformBlock)
