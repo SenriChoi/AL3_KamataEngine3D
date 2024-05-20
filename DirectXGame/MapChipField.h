@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <Vector3.h>
-#include <Vector3.h>
+#include<cstdint>
 #include <cassert>
 #include <fstream>
 #include <map>
@@ -23,8 +23,8 @@ public:
 	static inline const float kBlockWidth = 1.0f;
 	static inline const float kBlockHeight = 1.0f;
 
-	static inline const float kNumBlockVertical = 1.0f;
-	static inline const float kNumBlockHorizontal = 1.0f;
+	static inline const uint32_t kNumBlockVertical = 20;
+	static inline const uint32_t kNumBlockHorizontal = 100;
 
 	MapChipData mapChipData_;
 	void ResetMapChipData();
@@ -33,6 +33,10 @@ public:
 	MapChipType GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex);
 	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
 	
+
+	uint32_t GetNumBlockVertical();
+
+	uint32_t GetNumBlockHorizontal();
 };
 
 
