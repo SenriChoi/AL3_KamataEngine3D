@@ -22,6 +22,7 @@ GameScene::~GameScene() {
 	}
 	delete debugCamera_;
 	delete skydemo_;
+
 }
 
 void GameScene::Initialize() {
