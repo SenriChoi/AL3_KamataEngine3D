@@ -132,8 +132,8 @@ void GameScene::GenerateBlocks() {
 	for (uint32_t i = 0; i < numBlockVertical; i++) {
 		worldTransformBlock_[i].resize(numBlockHorizontal);
 	}
-	for (uint32_t i = 0; i < numBlockHorizontal; i++) {
-		for (uint32_t j = 0; j < numBlockVertical; j++) {
+	for (uint32_t i = 0; i < numBlockVertical; i++) {
+		for (uint32_t j = 0; j < numBlockHorizontal; j++) {
 			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlank) {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
