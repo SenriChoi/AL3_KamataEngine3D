@@ -23,6 +23,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete skydemo_;
 	delete mapChipField_;
+	delete modelPlayer_;
 }
 
 void GameScene::Initialize() {
@@ -42,7 +43,7 @@ void GameScene::Initialize() {
 	// ３Dモデルの生成
 	model_ = Model::Create();
 	modelSkydemo_ = Model::CreateFromOBJ("skydome", true);
-
+	modelPlayer_ = Model::CreateFromOBJ( "player", true);
 
 	skydemo_ = new Skydome;
 	// ワールド、ビューの初期化
@@ -51,7 +52,8 @@ void GameScene::Initialize() {
 
 	// player生成+初期化
 	player_ = new Player();
-	player_->Initialize(/*model_, textureHandle_, &viewProjection_*/);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 17);
+	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 	skydemo_->Initialize(modelSkydemo_, &viewProjection_);
 
 
@@ -148,6 +150,7 @@ void GameScene::Draw() {
 			model_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
+	player_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

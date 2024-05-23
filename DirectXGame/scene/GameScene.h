@@ -55,6 +55,7 @@ private: // メンバ変数
 	//３D モデル
 	Model* model_ = nullptr;
 	Model* modelSkydemo_ = nullptr;
+	Model* modelPlayer_ = nullptr;
 
 	//WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
@@ -62,6 +63,8 @@ private: // メンバ変数
 
 	//自キャラ
 	Player* player_ = nullptr;
+
+
 	Skydome*skydemo_ = nullptr;
 	//DEbugcamera
 	bool isDebugCameraActive_ = false;
