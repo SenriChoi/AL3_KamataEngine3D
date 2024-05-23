@@ -28,37 +28,10 @@ GameScene::~GameScene() {
 void GameScene::Initialize() {
 
 
-	//// 要素数
-	//const uint32_t kNumBlockVirtical = 10;
-	//const uint32_t kNumBlockHorizontal = 20;
-	//// ブロック1個分の横幅
-	//const float kBlockWidth = 2.0f;
-	//const float kBlockHeight = 2.0f;
-
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/block.csv");
 	GenerateBlocks();
 
-	// MAPCHIP
-	//int map[kNumBlockVirtical][kNumBlockHorizontal] = {
-	//    {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
- //       {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
- //       {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-	//    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
- //       {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
- //       {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-	//    {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
- //       {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
- //       {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-	//    {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-	//};
-
-
-	// 要素数を変更する
-	//worldTransformBlock_.resize(kNumBlockVirtical);
-	//for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-	//	worldTransformBlock_[i].resize(kNumBlockHorizontal);
-	//}
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -73,26 +46,15 @@ void GameScene::Initialize() {
 
 	skydemo_ = new Skydome;
 	// ワールド、ビューの初期化
-	/*worldTransform_.Initialize();*/
 	viewProjection_.farZ=5000;
 	viewProjection_.Initialize();
 
 	// player生成+初期化
 	player_ = new Player();
 	player_->Initialize(/*model_, textureHandle_, &viewProjection_*/);
-
 	skydemo_->Initialize(modelSkydemo_, &viewProjection_);
-	// ブロック生成
-	//for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-	//	for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-	//		if (map[i][j] == 1) {
-	//			worldTransformBlock_[i][j] = new WorldTransform();
-	//			worldTransformBlock_[i][j]->Initialize();
-	//			worldTransformBlock_[i][j]->translation_.x = kBlockWidth * j;
-	//			worldTransformBlock_[i][j]->translation_.y = kBlockHeight * i;
-	//		}
-	//	}
-	//}
+
+
 
 	//DebugCamera
 	debugCamera_ = new DebugCamera(1280, 720);
@@ -114,6 +76,8 @@ void GameScene::Update() {
 		viewProjection_.UpdateMatrix();
 	}
 
+		debugCamera_->Update();
+
 	for (std::vector<WorldTransform*>& worldTransforBlockLine : worldTransformBlock_) {
 		for (WorldTransform* worldTransformBlock : worldTransforBlockLine) {
 			if (!worldTransformBlock)
@@ -122,7 +86,7 @@ void GameScene::Update() {
 		}
 	}
 
-	debugCamera_->Update();
+
 }
 
 void GameScene::GenerateBlocks() {
@@ -134,7 +98,7 @@ void GameScene::GenerateBlocks() {
 	}
 	for (uint32_t i = 0; i < numBlockVertical; i++) {
 		for (uint32_t j = 0; j < numBlockHorizontal; j++) {
-			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlank) {
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
 				worldTransformBlock_[i][j] = worldTransform;
