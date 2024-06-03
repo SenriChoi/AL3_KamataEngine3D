@@ -24,6 +24,7 @@ GameScene::~GameScene() {
 		worldTransformBlock_.clear();
 	}
 	delete mapChipField_;
+	delete cameraController_;
 }
 
 void GameScene::Initialize() {
@@ -61,6 +62,19 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 
 	GenerateBlocks();
+
+
+	cameraController_ = new CameraController();
+	cameraController_->Initialize(&viewProjection_);
+	CameraController::Rect area_;
+	area_.left = 0.0f;
+	area_.right = 200.0f;
+	area_.bottom = 0.0f;
+	area_.top = 200.0f;
+	cameraController_->SetMovableArea(area_);
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
+
 }
 
 void GameScene::Update() { 
@@ -91,6 +105,8 @@ void GameScene::Update() {
 	}
 
 	player_->Update();
+
+	cameraController_->Update();
 
 }
 

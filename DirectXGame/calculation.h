@@ -5,11 +5,19 @@
 
 class Matrix4x4Math {};
 
-// 加算
+// V3加算
 static Vector3 Add(const Vector3& v1, const Vector3& v2) { return {v1.x + v2.x, v1.y + v2.y, v1.z + v2.z}; };
 
-// 減算
+// V3減算
 static Vector3 Subtract(const Vector3& v1, const Vector3& v2) { return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z}; };
+
+static Vector3 Multiply(float scaler, const Vector3& v) {
+	Vector3 result = {};
+	result.x = scaler * v.x;
+	result.y = scaler * v.y;
+	result.z = scaler * v.z;
+	return result;
+}
 
 
 // 積

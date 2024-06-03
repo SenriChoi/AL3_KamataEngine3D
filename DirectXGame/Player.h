@@ -21,8 +21,15 @@ public:
 
 	void Draw();
 
+	WorldTransform& GetWorldTransform();
+	
+	const Vector3& GetVelocity() const { return velocity_; }
+
+
 private:
 	WorldTransform worldTransform_;
+
+
 	ViewProjection *viewProjection_= nullptr;
 	Model* model_ = nullptr;
 	Vector3 velocity_ = {};
