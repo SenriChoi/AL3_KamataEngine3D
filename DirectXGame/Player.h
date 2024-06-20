@@ -46,7 +46,7 @@ public:
 	void playerMove();
 	void MapCollision(CollisionMapInfo& info);
 	void MapCollisionTop(CollisionMapInfo& info);
-	//void MapCollisionBottom(CollisionMapInfo& info);
+	void MapCollisionBottom(CollisionMapInfo& info);
 	//void MapCollisionRight(CollisionMapInfo& info);
 	//void MapCollisionLeft(CollisionMapInfo& info);
 	Vector3 CornerPostion(const Vector3& center, Corner corner);
@@ -54,9 +54,10 @@ public:
 	void collisionResult(CollisionMapInfo& info);
 
 	void isCeilingCollision(CollisionMapInfo& info);
+	void isLandingCollision(CollisionMapInfo& info);
+	
 
-
-private:
+	 private:
 	WorldTransform worldTransform_;
 
 
@@ -79,15 +80,20 @@ private:
 	bool onGround_ = true;
 	static inline const float kGravityAcceleration = 0.04f;
 	static inline const float kLimitFallSpeed = 0.8f;
-	static inline const float kJumpAcceleration = 0.3f;
+	static inline const float kJumpAcceleration = 0.51f;
 
 	//mapchip　field
 
 	MapChipField* mapChipField_ = nullptr;
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
+	static inline const float kWidth = 2.0f;
+	static inline const float kHeight = 2.0f;
 
 	static inline const float kBlank = 2.0f;
+
+	// 着地时速度衰减率
+	static inline const float kAttenuationLanding = 0.0f;
+	// 撞墙减速率
+	static inline const float kAttenuationWall = 0.0f;
 
 
 
