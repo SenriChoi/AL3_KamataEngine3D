@@ -57,6 +57,7 @@ void Player ::playerMove() {
 void Player::Update() {
 	bool landing = false;//着地FLAG
 
+	playerMove();
 	if (velocity_.y < 0.0f) {
 		if (worldTransform_.translation_.y <= 2.0f) { 
 			landing = true;
@@ -67,11 +68,6 @@ void Player::Update() {
 		if (velocity_.y > 0.0f) {
 			onGround_ = false;
 		}
-
-		playerMove();
-
-		
-	
 
 	if (Input::GetInstance()->PushKey(DIK_UP)) {
 		velocity_ = Add(velocity_, {0.0f, kJumpAcceleration, 0.0f});
@@ -175,8 +171,7 @@ void Player::MapCollisionTop(CollisionMapInfo& info){
 	if (hit) {
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(worldTransform_.translation_, info.move));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndexSet(indexSet.xIndex, indexSet.yIndex);
-		float moveY = (rect.bottom - worldTransform_.translation_.y + kBlank) - (kHeight / 2.0f);
-		info.move.y = std::max(0.0f, moveY);
+		info.move.y = std::max(0.0f, info.move.y);
 		info.isCeiling = true;
 	}
 	collisionResult(info);
@@ -217,8 +212,7 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 		// 检测到碰撞
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(worldTransform_.translation_, info.move));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndexSet(indexSet.xIndex, indexSet.yIndex);
-		float moveY = (rect.top - worldTransform_.translation_.y) + (kHeight / 2.0f) + kBlank;
-		info.move.y = std::min(0.0f, moveY);
+		info.move.y = std::min(0.0f, info.move.y);
 		info.isLanding = true;
 	}
 
