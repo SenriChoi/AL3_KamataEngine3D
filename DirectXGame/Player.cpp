@@ -18,11 +18,10 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, const Vect
 }
 
 void Player ::playerMove() {
-	if (!onGround_) {
+	
 		velocity_ = Add(velocity_, Vector3(0, -kGravityAcceleration, 0));
 		velocity_.y = std::max(velocity_.y, -1 * kLimitFallSpeed);
-	}
-
+	
 
 	if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
 
@@ -93,8 +92,13 @@ void Player::Update() {
 	}
 
 
+// ******** 处理水平方向移动 ********
+	worldTransform_.translation_ = Add(worldTransform_.translation_, Vector3(velocity_.x, 0.0f, 0.0f));
 
-	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
+	// ******** 如果不在地面上，应用重力 ********
+	if (!onGround_) {
+		worldTransform_.translation_ = Add(worldTransform_.translation_, Vector3(0.0f, velocity_.y, 0.0f));
+	}
 
 	//畫面制限(今当たり判定がないから）
 	if (worldTransform_.translation_.x > 50) {
@@ -127,8 +131,6 @@ WorldTransform& Player::GetWorldTransform() { return worldTransform_; }
 void Player::MapCollision(CollisionMapInfo& info) {
 	MapCollisionTop(info);
 	MapCollisionBottom(info);
-
-	 worldTransform_.translation_ = Add(worldTransform_.translation_, info.move);
 
 };
 void Player::MapCollisionTop(CollisionMapInfo& info){
@@ -210,6 +212,9 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 		info.move.y = std::min(0.0f, moveY);
 		info.isLanding = true;
 	}
+   else {
+        info.isLanding = false; // ******** 确保未检测到碰撞时将 isLanding 设置为 false ********
+    }
 
 }
 
@@ -222,7 +227,6 @@ void Player::isCeilingCollision(CollisionMapInfo& info) {
 		velocity_.y = 0.0f;
 	}
 }
-
 
 void Player::isLandingCollision(CollisionMapInfo& info) {
 	if (onGround_) {
@@ -244,33 +248,32 @@ void Player::isLandingCollision(CollisionMapInfo& info) {
 			MapChipField::IndexSet indexSet;
 
 			// 左下
-			indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(positionsNew[kLeftBottom],Vector3(0, kSmallOffset, 0)));
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(positionsNew[kLeftBottom], Vector3(0, kSmallOffset, 0)));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 				hit = true;
 			}
 			// 右下
-			indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(positionsNew[kRightBottom],Vector3(0, kSmallOffset, 0)));
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(positionsNew[kRightBottom], Vector3(0, kSmallOffset, 0)));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 				hit = true;
 			}
-				
+
 			if (!hit) {
-				onGround_ = false;
+				onGround_ = false; // 修改为未检测到块时仍然设置为不在地面上
 			}
 		}
 	} else {
-
 		if (info.isLanding) {
 			velocity_.y = 0.0f;
 			onGround_ = true;
 			velocity_.x *= (1.0f - kAttenuationLanding);
-			
+		} else {
+			onGround_ = false; // 增加离开块时的处理逻辑
 		}
 	}
 }
-
 
 
 

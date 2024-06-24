@@ -85,10 +85,10 @@ public:
 	//mapchip　field
 
 	MapChipField* mapChipField_ = nullptr;
-	static inline const float kWidth = 2.0f;
-	static inline const float kHeight =2.0f;
+	static inline const float kWidth = 1.99f;
+	static inline const float kHeight = 1.99f;
 
-	static inline const float kBlank = 2.0f;
+	static inline const float kBlank = 0.01f;
 
 	// 着地时速度衰减率
 	static inline const float kAttenuationLanding = 0.0f;
