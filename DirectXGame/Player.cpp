@@ -13,10 +13,15 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, const Vect
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 	viewProjection_=viewProjection;
+	onGround_ = true;
 
 }
 
 void Player ::playerMove() {
+	if (!onGround_) {
+		velocity_ = Add(velocity_, Vector3(0, -kGravityAcceleration, 0));
+		velocity_.y = std::max(velocity_.y, -1 * kLimitFallSpeed);
+	}
 
 
 	if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
@@ -51,39 +56,25 @@ void Player ::playerMove() {
 	} else {
 		velocity_.x *= (1.0f - kAttenuation);
 	}
-}
+	//JUMP
+	if (onGround_) {
+		if(Input::GetInstance()->PushKey(DIK_UP)) { velocity_ = Add(velocity_, {0.0f, kJumpAcceleration, 0.0f}); 
+		onGround_ = false; // 起跳时不再着地
+		}
+	}
+	}
 
 
 void Player::Update() {
-	bool landing = false;//着地FLAG
-
 	playerMove();
-	if (velocity_.y < 0.0f) {
-		if (worldTransform_.translation_.y <= 2.0f) { 
-			landing = true;
-		}
-	}
 
-	if (onGround_) {
-		if (velocity_.y > 0.0f) {
-			onGround_ = false;
-		}
-
-	if (Input::GetInstance()->PushKey(DIK_UP)) {
-		velocity_ = Add(velocity_, {0.0f, kJumpAcceleration, 0.0f});
-	
-	}
-	} else //空中
-	{
-		velocity_ = Add(velocity_,Vector3 (0,-kGravityAcceleration,0));
-		velocity_.y=std::max(velocity_.y,-1*kLimitFallSpeed);
-		if (landing) {
-			worldTransform_.translation_.y = 2.0f; 
-			velocity_.x *= (1.0f - kAttenuation);
-			velocity_.y = 0.0f;
-			onGround_ = true;
-		}
-	}
+	/// 衝突
+	CollisionMapInfo collisionMapInfo;
+	collisionMapInfo.move = velocity_;
+	MapCollision(collisionMapInfo);
+	collisionResult(collisionMapInfo);
+	isCeilingCollision(collisionMapInfo);
+	isLandingCollision(collisionMapInfo);
 
 
 	// 旋回制御
@@ -100,12 +91,8 @@ void Player::Update() {
 		float nowRotationY = std::lerp(turnFirstRotationY_, destinationRotationY, easing);
 		worldTransform_.rotation_.y = nowRotationY;
 	}
-	/// 衝突
-	CollisionMapInfo collisionMapInfo;
-	collisionMapInfo.move = velocity_;
-	MapCollision(collisionMapInfo);
 
-	isLandingCollision(collisionMapInfo);
+
 
 	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
 
@@ -130,6 +117,8 @@ Vector3 Player::CornerPostion(const Vector3& center, Corner corner) {
     };
 	return Add(center, offsetTable[static_cast<uint32_t>(corner)]);
 };
+
+
 void Player::Draw() { 
 	model_->Draw(worldTransform_, *viewProjection_); }
 
@@ -138,6 +127,8 @@ WorldTransform& Player::GetWorldTransform() { return worldTransform_; }
 void Player::MapCollision(CollisionMapInfo& info) {
 	MapCollisionTop(info);
 	MapCollisionBottom(info);
+
+	 worldTransform_.translation_ = Add(worldTransform_.translation_, info.move);
 
 };
 void Player::MapCollisionTop(CollisionMapInfo& info){
@@ -169,14 +160,15 @@ void Player::MapCollisionTop(CollisionMapInfo& info){
 	}
 
 	if (hit) {
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(worldTransform_.translation_, info.move));
+		Vector3 offset = {0.0f, kHeight / 2.0f, 0.0f};
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(Add(worldTransform_.translation_, info.move),offset));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndexSet(indexSet.xIndex, indexSet.yIndex);
-		info.move.y = std::max(0.0f, info.move.y);
+		float moveY = (rect.bottom - worldTransform_.translation_.y + kBlank) - (kHeight / 2.0f);
+		info.move.y = std::max(0.0f, moveY);
 		info.isCeiling = true;
 	}
-	collisionResult(info);
 
-	isCeilingCollision(info);
+
 };
 
 
@@ -210,9 +202,12 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 
    if (hit) {
 		// 检测到碰撞
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(worldTransform_.translation_, info.move));
+	   Vector3 offset = {0.0f, kHeight / 2.0f, 0.0f};
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Subtract(Add(worldTransform_.translation_, info.move), offset));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndexSet(indexSet.xIndex, indexSet.yIndex);
-		info.move.y = std::min(0.0f, info.move.y);
+		float moveY = (rect.top - worldTransform_.translation_.y) + (kHeight / 2.0f) ;
+
+		info.move.y = std::min(0.0f, moveY);
 		info.isLanding = true;
 	}
 
@@ -234,7 +229,6 @@ void Player::isLandingCollision(CollisionMapInfo& info) {
 		if (velocity_.y > 0.0f) {
 			onGround_ = false;
 		} else {
-
 			const float kSmallOffset = 0.01f;
 			std::array<Vector3, kNumCorners> positionsNew;
 			for (uint32_t i = 0; i < positionsNew.size(); ++i) {
@@ -269,9 +263,10 @@ void Player::isLandingCollision(CollisionMapInfo& info) {
 	} else {
 
 		if (info.isLanding) {
+			velocity_.y = 0.0f;
 			onGround_ = true;
 			velocity_.x *= (1.0f - kAttenuationLanding);
-			velocity_.y = 0.0f;
+			
 		}
 	}
 }

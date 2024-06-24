@@ -85,8 +85,8 @@ public:
 	//mapchip　field
 
 	MapChipField* mapChipField_ = nullptr;
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
+	static inline const float kWidth = 2.0f;
+	static inline const float kHeight =2.0f;
 
 	static inline const float kBlank = 2.0f;
 
