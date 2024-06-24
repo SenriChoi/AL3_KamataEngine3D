@@ -194,12 +194,14 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
+		cameraStop = true;
 	}
 	// 右下点
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
+		cameraStop = true;
 	}
 
    if (hit) {
@@ -220,6 +222,7 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 
 void Player::collisionResult(CollisionMapInfo& info) {
 	worldTransform_.translation_ = Add(worldTransform_.translation_, info.move); 
+
 }
 
 void Player::isCeilingCollision(CollisionMapInfo& info) {
@@ -252,12 +255,14 @@ void Player::isLandingCollision(CollisionMapInfo& info) {
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 				hit = true;
+				cameraStop = true;
 			}
 			// 右下
 			indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(positionsNew[kRightBottom], Vector3(0, kSmallOffset, 0)));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 				hit = true;
+				cameraStop = true;
 			}
 
 			if (!hit) {

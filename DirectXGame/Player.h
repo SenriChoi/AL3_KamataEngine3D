@@ -39,6 +39,7 @@ public:
 	void Draw();
 
 	WorldTransform& GetWorldTransform();
+	bool cameraStop = false;
 
 	const Vector3& GetVelocity() const { return velocity_; }
 
