@@ -73,9 +73,9 @@ private:
 	static inline const float kTimeTurn = 0.3f;
 
 	bool onGround_ = true;
-	static inline const float kGravityAcceleration = 0.04f;
-	static inline const float kLimitFallSpeed = 0.8f;
-	static inline const float kJumpAcceleration = 0.51f;
+	static inline const float kGravityAcceleration = 0.01f;
+	static inline const float kLimitFallSpeed = 0.5f;
+	static inline const float kJumpAcceleration = 0.4f;
 
 	MapChipField* mapChipField_ = nullptr;
 	static inline const float kWidth = 1.99f;

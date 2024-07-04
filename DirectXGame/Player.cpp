@@ -13,62 +13,10 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, const Vect
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 	viewProjection_=viewProjection;
-	onGround_ = true;
-	
-	
-
 }
-
-void Player ::playerMove() {
-	
-		velocity_ = Add(velocity_, Vector3(0, -kGravityAcceleration, 0));
-		velocity_.y = std::max(velocity_.y, -1 * kLimitFallSpeed);
-	
-
-	if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
-
-		Vector3 acceleration = {};
-		if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-			if (velocity_.x < 0.0f) {
-				velocity_.x *= (1.0f - kAttenuation);
-			}
-			acceleration.x += kAcceleration;
-			if (lrDirection_ != LRDirection::kRight) {
-				lrDirection_ = LRDirection::kRight;
-				turnFirstRotationY_ = worldTransform_.rotation_.y;
-				turnTimer_ = 0.2f;
-			}
-		} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-			if (velocity_.x > 0.0f) {
-				velocity_.x *= (1.0f - kAttenuation);
-			}
-			acceleration.x -= kAcceleration;
-			if (lrDirection_ != LRDirection::kLeft) {
-				lrDirection_ = LRDirection::kLeft;
-				turnFirstRotationY_ = worldTransform_.rotation_.y;
-				turnTimer_ = 0.2f;
-			}
-		}
-
-		// 加減速
-		velocity_ = Add(velocity_, acceleration);
-		// 制限速度
-		velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
-	} else {
-		velocity_.x *= (1.0f - kAttenuation);
-	}
-	//JUMP
-	if (onGround_) {
-		if(Input::GetInstance()->PushKey(DIK_UP)) { velocity_ = Add(velocity_, {0.0f, kJumpAcceleration, 0.0f}); 
-		onGround_ = false; // 起跳时不再着地
-		}
-	}
-	}
-
 
 void Player::Update() {
 	playerMove();
-
 	/// 衝突
 	CollisionMapInfo collisionMapInfo;
 	collisionMapInfo.move = velocity_;
@@ -94,33 +42,60 @@ void Player::Update() {
 		worldTransform_.rotation_.y = nowRotationY;
 	}
 
-
-// ******** 处理水平方向移动 ********
-	worldTransform_.translation_ = Add(worldTransform_.translation_, Vector3(velocity_.x, 0.0f, 0.0f));
-
-	// ******** 如果不在地面上，应用重力 ********
-	if (!onGround_) {
-		worldTransform_.translation_ = Add(worldTransform_.translation_, Vector3(0.0f, velocity_.y, 0.0f));
-	}
-
-	//畫面制限(今当たり判定がないから）
-	if (worldTransform_.translation_.x > 50) {
-		worldTransform_.translation_.x = 50;
-	}
-	if (worldTransform_.translation_.x < 2) {
-		worldTransform_.translation_.x = 2;
-	}
-
-
 	worldTransform_.UpdateMatrix();
 }
 
+void Player ::playerMove() {
+
+if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
+		Vector3 acceleration = {};
+		if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+			// 旋转
+			if (lrDirection_ != LRDirection::kRight) {
+				lrDirection_ = LRDirection::kRight;
+				turnFirstRotationY_ = std::numbers::pi_v<float>;
+				turnTimer_ = 0.2f;
+			}
+			// 减速
+			if (velocity_.x < 0.0f) {
+				velocity_.x *= (1.0f - kAttenuation);
+			}
+			acceleration.x += kAcceleration;
+		} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+			// 旋转
+			if (lrDirection_ != LRDirection::kLeft) {
+				lrDirection_ = LRDirection::kLeft;
+				turnFirstRotationY_ = 0.0f;
+				turnTimer_ = 0.2f;
+			}
+			// 减速
+			if (velocity_.x > 0.0f) {
+				velocity_.x *= (1.0f - kAttenuation);
+			}
+			acceleration.x -= kAcceleration;
+		}
+		velocity_ = Add(velocity_, acceleration);
+		velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
+	} // 非按键时速度衰减
+	else {
+		velocity_.x *= (1.0f - kAttenuation);
+	}
+	// 跳跃
+	if (onGround_) {
+
+		if (Input::GetInstance()->PushKey(DIK_UP)) {
+			velocity_ = Add(velocity_, {0.0f, kJumpAcceleration, 0.0f});
+		}
+	}
+}
+
+
 Vector3 Player::CornerPostion(const Vector3& center, Corner corner) {
 	Vector3 offsetTable[kNumCorners] = {
-	    {+kWidth / 2.0f, -kHeight / 2.0f, 0},
-        {-kWidth / 2.0f, -kHeight / 2.0f, 0},
-        {+kWidth / 2.0f, +kHeight / 2.0f, 0},
-        {-kWidth / 2.0f, +kHeight / 2.0f, 0}
+	    {kWidth / 2.0f, -kHeight / 2.0f, 0.0f},
+        {-kWidth / 2.0f, -kHeight / 2.0f, 0.0f},
+        {kWidth / 2.0f, kHeight / 2.0f, 0.0f},
+        {-kWidth / 2.0f, kHeight / 2.0f, 0.0f}
     };
 	return Add(center, offsetTable[static_cast<uint32_t>(corner)]);
 };
@@ -216,15 +191,14 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 	   Vector3 offset = {0.0f, kHeight / 2.0f, 0.0f};
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Subtract(Add(worldTransform_.translation_, info.move), offset));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndexSet(indexSet.xIndex, indexSet.yIndex);
-		float moveY = (rect.top - worldTransform_.translation_.y) + (kHeight / 2.0f) ;
+		float moveY = (rect.top - worldTransform_.translation_.y) + (kHeight / 2.0f) + kBlank;
 
 		info.move.y = std::min(0.0f, moveY);
 		info.isLanding = true;
-		velocity_.y = 0;
-	}
-   else {
-        info.isLanding = false; // ******** 确保未检测到碰撞时将 isLanding 设置为 false ********
-    }
+   } else {
+	   info.isLanding = false;
+   }
+
 
 }
 
@@ -306,6 +280,8 @@ void Player::MapCollisionLeft(CollisionMapInfo& info) {
 		float moveX = rect.right - worldTransform_.translation_.x + kWidth / 2.0f + kBlank;
 		info.move.x = std::min(0.0f, moveX);
 		info.isWall = true;
+	} else {
+		info.isWall = false;
 	}
 }
 
@@ -318,6 +294,9 @@ void Player::isCeilingCollision(CollisionMapInfo& info) {
 	if (info.isCeiling) {
 		velocity_.y = 0.0f;
 	}
+	if (info.isLanding) {
+		velocity_.y = 0.0f;
+	}
 }
 
 void Player::isWallCollision(CollisionMapInfo& info) {
@@ -327,8 +306,11 @@ void Player::isWallCollision(CollisionMapInfo& info) {
 }
 
 void Player::isLandingCollision(CollisionMapInfo& info) {
+	velocity_ = Add(velocity_, {0.0f, -kGravityAcceleration, 0.0f});
+	velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+
 	if (onGround_) {
-		if (velocity_.y > 0.0f) {
+		if (velocity_.y >0.0f) {
 			onGround_ = false;
 		} else {
 			const float kSmallOffset = 0.01f;
@@ -366,12 +348,11 @@ void Player::isLandingCollision(CollisionMapInfo& info) {
 		}
 	} else {
 		if (info.isLanding) {
-			velocity_.y = 0.0f;
 			onGround_ = true;
 			velocity_.x *= (1.0f - kAttenuationLanding);
-		} else {
-			onGround_ = false; // 增加离开块时的处理逻辑
-		}
+			velocity_.y = 0.0f;
+
+		} 
 	}
 }
 
