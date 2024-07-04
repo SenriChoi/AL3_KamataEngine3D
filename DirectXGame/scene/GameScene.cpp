@@ -23,6 +23,7 @@ GameScene::~GameScene() {
 		}
 		worldTransformBlock_.clear();
 	}
+	delete modelEnemy_;
 	delete mapChipField_;
 	delete cameraController_;
 }
@@ -44,6 +45,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	modelSkydemo_ = Model::CreateFromOBJ("skydome", true);
 	modelPlayer_ = Model::CreateFromOBJ( "player", true);
+	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
 
 	// ワールド、ビューの初期化
 	/*viewProjection_.farZ=5000;*/
@@ -61,6 +63,14 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 	player_->SetMapChipField(mapChipField_);
+
+	enemy_ = new Enemy();
+
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(10, 18);
+
+	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+
+
 	GenerateBlocks();
 
 
@@ -105,6 +115,8 @@ void GameScene::Update() {
 	}
 
 	player_->Update();
+	enemy_->Update();
+	
 
 	cameraController_->Update();
 
@@ -152,6 +164,10 @@ void GameScene::Draw() {
 		}
 	}
 	player_->Draw();
+
+
+	if (enemy_ != nullptr)
+		enemy_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
