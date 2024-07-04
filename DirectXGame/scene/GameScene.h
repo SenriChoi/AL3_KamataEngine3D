@@ -45,6 +45,7 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void CheckAllCollisions();
 
 
 private: // メンバ変数
@@ -67,8 +68,8 @@ private: // メンバ変数
 	//自キャラ
 	Player* player_ = nullptr;
 	
-	Enemy* enemy_ = nullptr;
-
+	std::list<Enemy*> enemies_;
+	static inline const uint32_t enemyCount = 2;
 
 	Skydome*skydemo_ = nullptr;
 	//DEbugcamera

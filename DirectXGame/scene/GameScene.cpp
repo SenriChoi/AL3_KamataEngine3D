@@ -23,7 +23,10 @@ GameScene::~GameScene() {
 		}
 		worldTransformBlock_.clear();
 	}
-	delete modelEnemy_;
+
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 	delete mapChipField_;
 	delete cameraController_;
 }
@@ -64,12 +67,13 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
-	enemy_ = new Enemy();
-
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(10, 18);
-
-	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
-
+	Vector3 enemyPosition[enemyCount];
+	for (uint32_t i = 0; i < enemyCount; ++i) {
+		Enemy* newEnemy = new Enemy();
+		enemyPosition[i] = mapChipField_->GetMapChipPositionByIndex(10, 18 - i * 2);
+		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition[i]);
+		enemies_.push_back(newEnemy);
+	}
 
 	GenerateBlocks();
 
@@ -115,8 +119,12 @@ void GameScene::Update() {
 	}
 
 	player_->Update();
-	enemy_->Update();
+
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
 	
+	CheckAllCollisions();
 
 	cameraController_->Update();
 
@@ -166,8 +174,11 @@ void GameScene::Draw() {
 	player_->Draw();
 
 
-	if (enemy_ != nullptr)
-		enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+		if (enemy != nullptr) {
+			enemy->Draw();
+		}
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -206,3 +217,21 @@ void GameScene::GenerateBlocks() {
 		}
 	}
 };
+
+
+void GameScene::CheckAllCollisions() {
+#pragma region player and enemy
+	// プレイヤーと敌人の衝突判定
+	AABB aabb1, aabb2;
+
+	aabb1 = player_->GetAABB();
+
+	for (Enemy* enemy : enemies_) {
+		aabb2 = enemy->GetAABB();
+		if (IsCollision(aabb1, aabb2)) {
+			player_->OnCollision(enemy);
+			enemy->OnCollision(player_);
+		}
+	}
+#pragma endregion
+}

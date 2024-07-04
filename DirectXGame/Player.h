@@ -27,6 +27,10 @@ enum Corner {
 	kNumCorners // 要素数
 };
 
+class MapChipField;
+
+class Enemy;
+
 class Player {
 public:
 	Player();
@@ -52,6 +56,10 @@ public:
 	void isCeilingCollision(CollisionMapInfo& info);
 	void isLandingCollision(CollisionMapInfo& info);
 	void isWallCollision(CollisionMapInfo& info);
+
+	Vector3 GetWorldPosition();
+	AABB GetAABB();
+	void OnCollision(const Enemy* enemy);
 
 private:
 	WorldTransform worldTransform_;
@@ -85,3 +93,4 @@ private:
 	static inline const float kAttenuationLanding = 0.1f;
 	static inline const float kAttenuationWall = 0.05f;
 };
+
