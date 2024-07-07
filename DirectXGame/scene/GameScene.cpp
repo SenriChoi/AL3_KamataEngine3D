@@ -29,6 +29,7 @@ GameScene::~GameScene() {
 	}
 	delete mapChipField_;
 	delete cameraController_;
+	delete deathParticles_;
 }
 
 void GameScene::Initialize() {
@@ -49,6 +50,7 @@ void GameScene::Initialize() {
 	modelSkydemo_ = Model::CreateFromOBJ("skydome", true);
 	modelPlayer_ = Model::CreateFromOBJ( "player", true);
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
+	modelParticle_ = Model::CreateFromOBJ("DeathParticles", true);
 
 	// ワールド、ビューの初期化
 	/*viewProjection_.farZ=5000;*/
@@ -74,6 +76,11 @@ void GameScene::Initialize() {
 		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition[i]);
 		enemies_.push_back(newEnemy);
 	}
+
+
+	deathParticles_ = new DeathParticles();
+
+	deathParticles_->Initialize(modelParticle_, &viewProjection_, playerPosition);
 
 	GenerateBlocks();
 
@@ -124,6 +131,10 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 	
+	if (deathParticles_ != nullptr) {
+		deathParticles_->Update();
+	}
+
 	CheckAllCollisions();
 
 	cameraController_->Update();
@@ -179,6 +190,10 @@ void GameScene::Draw() {
 			enemy->Draw();
 		}
 	}
+
+	if (deathParticles_ != nullptr) {
+		deathParticles_->Draw();
+	}	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

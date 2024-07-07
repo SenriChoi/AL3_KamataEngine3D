@@ -14,6 +14,7 @@
 #include "MapChipField.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "DeathParticles.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -60,6 +61,7 @@ private: // メンバ変数
 	Model* modelSkydemo_ = nullptr;
 	Model* modelPlayer_ = nullptr;
 	Model* modelEnemy_ = nullptr;
+	Model* modelParticle_ = nullptr;
 
 	//WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
@@ -82,6 +84,8 @@ private: // メンバ変数
 	void GenerateBlocks();
 
 	CameraController* cameraController_ = nullptr;
+
+	DeathParticles* deathParticles_ = nullptr;
 
 
 	/// <summary>
