@@ -10,8 +10,11 @@ void CameraController::Initialize(ViewProjection* viewProjection) { viewProjecti
 void CameraController::Update() { 
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
 	Vector3 targetVelocity = target_->GetVelocity();
-	if (target_->cameraStop == true) {
+	if (target_->cameraStopY == true) {
 		targetVelocity.y = 0;
+	}
+	if (target_->cameraStopX== true) {
+		targetVelocity.x = 0;
 	}
 	targetPosition = Add(Add(targetWorldTransform.translation_, targetOffset_), Multiply( kVelocityBias,targetVelocity));
 	viewProjection_->translation_ .x= std::lerp(viewProjection_->translation_.x, targetPosition.x, kInterpolationRate);

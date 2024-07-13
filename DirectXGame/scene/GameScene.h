@@ -15,6 +15,9 @@
 #include "CameraController.h"
 #include "Enemy.h"
 #include "DeathParticles.h"
+
+
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -47,6 +50,10 @@ public: // メンバ関数
 	void Draw();
 
 	void CheckAllCollisions();
+
+	void ChangePhase();
+
+	bool IsFinished() const { return finished_; }
 
 
 private: // メンバ変数
@@ -87,8 +94,13 @@ private: // メンバ変数
 
 	DeathParticles* deathParticles_ = nullptr;
 
+	enum class Phase {
+		kPlay,
+		kDeath,
+	};
 
-	/// <summary>
-	/// ゲームシーン用
-	/// </summary>
+	Phase phase_;
+
+	bool finished_ = false;
+
 };

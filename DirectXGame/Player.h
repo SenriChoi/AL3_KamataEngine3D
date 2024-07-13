@@ -39,7 +39,8 @@ public:
 	void Update();
 	void Draw();
 	WorldTransform& GetWorldTransform();
-	bool cameraStop = false;
+	bool cameraStopY = false;
+	bool cameraStopX = false;
 
 	const Vector3& GetVelocity() const { return velocity_; }
 
@@ -60,6 +61,9 @@ public:
 	Vector3 GetWorldPosition();
 	AABB GetAABB();
 	void OnCollision(const Enemy* enemy);
+
+	bool isDead_ = false;
+	bool IsDead() const { return isDead_; };
 
 private:
 	WorldTransform worldTransform_;
@@ -91,6 +95,6 @@ private:
 
 	static inline const float kBlank = 0.01f;
 	static inline const float kAttenuationLanding = 0.1f;
-	static inline const float kAttenuationWall = 0.05f;
+	static inline const float kAttenuationWall = 1.2f;
 };
 

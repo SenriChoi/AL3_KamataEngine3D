@@ -24,6 +24,8 @@ class DeathParticles {
 	/// </summary>
 	void Draw();
 
+	bool IsFinished() { return isFinished_; }
+
 	private:
 	static inline const uint32_t kNumParticles = 8;
 

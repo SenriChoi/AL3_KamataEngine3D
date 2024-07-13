@@ -128,7 +128,8 @@ AABB Player::GetAABB() {
 
 void Player::OnCollision(const Enemy* enemy) {
 	(void)enemy;
-	velocity_ =Add(velocity_, Vector3(0, 2.0f, 0));
+	//velocity_ =Add(velocity_, Vector3(0, 2.0f, 0));
+	isDead_ = true;
 }
 
 void Player::MapCollision(CollisionMapInfo& info) {
@@ -199,14 +200,14 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
-		cameraStop = true;
+		cameraStopY = true;
 	}
 	// 右下点
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
-		cameraStop = true;
+		cameraStopY = true;
 	}
 
    if (hit) {
@@ -325,6 +326,8 @@ void Player::isCeilingCollision(CollisionMapInfo& info) {
 void Player::isWallCollision(CollisionMapInfo& info) {
 	if (info.isWall) {
 		velocity_.x *= (1 - kAttenuationWall);
+		cameraStopX = true;
+
 	}
 }
 
@@ -355,14 +358,14 @@ void Player::isLandingCollision(CollisionMapInfo& info) {
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 				hit = true;
-				cameraStop = true;
+				cameraStopY = true;
 			}
 			// 右下
 			indexSet = mapChipField_->GetMapChipIndexSetByPosition(Add(positionsNew[kRightBottom], Vector3(0, kSmallOffset, 0)));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 				hit = true;
-				cameraStop = true;
+				cameraStopY = true;
 			}
 
 			if (!hit) {

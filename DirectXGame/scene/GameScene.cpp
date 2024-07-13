@@ -34,6 +34,7 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
+	phase_ = Phase::kPlay;
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -80,7 +81,6 @@ void GameScene::Initialize() {
 
 	deathParticles_ = new DeathParticles();
 
-	deathParticles_->Initialize(modelParticle_, &viewProjection_, playerPosition);
 
 	GenerateBlocks();
 
@@ -105,39 +105,7 @@ void GameScene::Update() {
 	}
 #endif // _DEBUG
 
-	skydemo_->Update();
-	if (isDebugCameraActive_ == true) {
-		debugCamera_->Update();
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
-	} else {
-		viewProjection_.UpdateMatrix();
-	}
-
-		debugCamera_->Update();
-
-	for (std::vector<WorldTransform*>& worldTransforBlockLine : worldTransformBlock_) {
-		for (WorldTransform* worldTransformBlock : worldTransforBlockLine) {
-			if (!worldTransformBlock)
-				continue;
-			worldTransformBlock->UpdateMatrix();
-		}
-	}
-
-	player_->Update();
-
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
-	}
-	
-	if (deathParticles_ != nullptr) {
-		deathParticles_->Update();
-	}
-
-	CheckAllCollisions();
-
-	cameraController_->Update();
+	ChangePhase();
 
 }
 
@@ -182,8 +150,9 @@ void GameScene::Draw() {
 			model_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
-	player_->Draw();
-
+	if (!player_->isDead_) {
+		player_->Draw();
+	}
 
 	for (Enemy* enemy : enemies_) {
 		if (enemy != nullptr) {
@@ -250,3 +219,57 @@ void GameScene::CheckAllCollisions() {
 	}
 #pragma endregion
 }
+
+	void GameScene::ChangePhase() {
+
+	skydemo_->Update();
+	if (isDebugCameraActive_ == true) {
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
+
+	debugCamera_->Update();
+
+	for (std::vector<WorldTransform*>& worldTransforBlockLine : worldTransformBlock_) {
+		for (WorldTransform* worldTransformBlock : worldTransforBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
+	cameraController_->Update();
+
+	
+		switch (phase_) {
+	    case Phase::kPlay:
+		    player_->Update();
+		    CheckAllCollisions();
+
+		    if (player_->isDead_ ) {
+			    phase_ = Phase::kDeath;
+			    const Vector3& deathPosition = player_->GetWorldTransform().translation_;
+			    deathParticles_->Initialize(modelParticle_, &viewProjection_, deathPosition);
+		    }
+		    break;
+
+	    case Phase::kDeath:
+
+		    if (deathParticles_ != nullptr) {
+			    deathParticles_->Update();
+		    }
+		    if (deathParticles_ && deathParticles_->IsFinished()) {
+			    finished_ = true;
+		    }
+		    break;
+	    }
+
+	}

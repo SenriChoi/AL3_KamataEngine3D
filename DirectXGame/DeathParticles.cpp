@@ -49,6 +49,8 @@ void DeathParticles::Draw() {
 		return;
 	}
 	for (auto& worldTransfrom : worldTransforms_) {
-		model_->Draw(worldTransfrom, *viewProjection_, &objectColor_);
+		if (model_ != nullptr) {
+			model_->Draw(worldTransfrom, *viewProjection_, &objectColor_);
+		}
 	}
 }
