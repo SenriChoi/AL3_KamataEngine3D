@@ -7,12 +7,13 @@
 #include "TextureManager.h"
 #include "WinApp.h"
 #include "TitleScene.h"
-
+#include "ClearScene.h"
 
 enum class Scene {
 	kUnkonwn = 0,
 	kTitle,
 	kGame,
+	kClear
 };
 
 Scene scene = Scene::kUnkonwn;
@@ -20,6 +21,7 @@ Scene scene = Scene::kUnkonwn;
 
 TitleScene* titleScene = nullptr;
 GameScene* gameScene = nullptr;
+ClearScene* clearScene = nullptr;
 
 void ChangeScene() {
 	switch (scene) {
@@ -40,6 +42,24 @@ void ChangeScene() {
 			titleScene = new TitleScene();
 			titleScene->Initialize();
 		}
+
+		else if (gameScene->IsClear()) {
+			scene = Scene::kClear;
+			delete gameScene;
+			gameScene = nullptr;
+			clearScene = new ClearScene();
+			clearScene->Initialize();
+		}
+		break;
+
+	case Scene::kClear:
+		if (clearScene->IsFinished()) {
+			scene = Scene::kTitle;
+			delete clearScene;
+			clearScene = nullptr;
+			titleScene = new TitleScene();
+			titleScene->Initialize();
+		}
 		break;
 	}
 }
@@ -52,7 +72,11 @@ void UpdateScene() {
 	case Scene::kGame:
 		gameScene->Update();
 		break;
+	case Scene::kClear:
+		clearScene->Update();
+		break;
 	}
+
 }
 
 void DrawScene() {
@@ -62,6 +86,9 @@ void DrawScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Draw();
+		break;
+	case Scene::kClear:
+		clearScene->Draw();
 		break;
 	}
 }
@@ -79,7 +106,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
-	win->CreateGameWindow(L"GC2A_06_ジョ_カエイ_AL3");
+	win->CreateGameWindow(L"GC2A_06_ジョ_カエイ_SafeLanding");
 
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
@@ -125,6 +152,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ゲームシーンの初期化
 	gameScene = new GameScene();
 	gameScene->Initialize();
+
+	clearScene = new ClearScene();
+	clearScene->Initialize();
 
 	// メインループ
 	while (true) {
@@ -177,6 +207,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 各種解放
 	delete titleScene;
 	delete gameScene;
+	delete clearScene;
 	// 3Dモデル解放
 	Model::StaticFinalize();
 	audio->Finalize();

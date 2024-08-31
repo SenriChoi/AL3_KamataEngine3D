@@ -66,14 +66,36 @@ void GameScene::Initialize() {
 
 	// player生成+初期化
 	player_ = new Player();
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(8, 1);
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
 	Vector3 enemyPosition[enemyCount];
 	for (uint32_t i = 0; i < enemyCount; ++i) {
 		Enemy* newEnemy = new Enemy();
-		enemyPosition[i] = mapChipField_->GetMapChipPositionByIndex(10, 18 - i * 2);
+
+		enemyPosition[0] = mapChipField_->GetMapChipPositionByIndex(10,5);
+		enemyPosition[1] = mapChipField_->GetMapChipPositionByIndex(11, 5);
+		enemyPosition[2] = mapChipField_->GetMapChipPositionByIndex(5, 10);
+		enemyPosition[3] = mapChipField_->GetMapChipPositionByIndex(6, 11);
+		enemyPosition[4] = mapChipField_->GetMapChipPositionByIndex(8, 12);
+		enemyPosition[5] = mapChipField_->GetMapChipPositionByIndex(7, 18);
+		enemyPosition[6] = mapChipField_->GetMapChipPositionByIndex(15, 20);
+		enemyPosition[7] = mapChipField_->GetMapChipPositionByIndex(12, 22);
+		enemyPosition[8] = mapChipField_->GetMapChipPositionByIndex(7, 25);
+		enemyPosition[9] = mapChipField_->GetMapChipPositionByIndex(8, 25);
+
+		enemyPosition[10] = mapChipField_->GetMapChipPositionByIndex(10, 25);
+		enemyPosition[11] = mapChipField_->GetMapChipPositionByIndex(2, 29);
+		enemyPosition[12] = mapChipField_->GetMapChipPositionByIndex(1, 30);
+		enemyPosition[13] = mapChipField_->GetMapChipPositionByIndex(16, 35);
+		enemyPosition[14] = mapChipField_->GetMapChipPositionByIndex(7, 38);
+		enemyPosition[15] = mapChipField_->GetMapChipPositionByIndex(8, 39);
+		enemyPosition[16] = mapChipField_->GetMapChipPositionByIndex(2, 46);
+		enemyPosition[17] = mapChipField_->GetMapChipPositionByIndex(15, 45);
+		enemyPosition[18] = mapChipField_->GetMapChipPositionByIndex(10, 51);
+		enemyPosition[19] = mapChipField_->GetMapChipPositionByIndex(4, 55);
+
 		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition[i]);
 		enemies_.push_back(newEnemy);
 	}
@@ -259,6 +281,10 @@ void GameScene::CheckAllCollisions() {
 			    const Vector3& deathPosition = player_->GetWorldTransform().translation_;
 			    deathParticles_->Initialize(modelParticle_, &viewProjection_, deathPosition);
 		    }
+
+		if (player_->playerClear) {
+			    clear_=true;
+			}
 		    break;
 
 	    case Phase::kDeath:

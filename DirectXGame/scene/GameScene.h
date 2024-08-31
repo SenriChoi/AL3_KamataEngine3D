@@ -54,6 +54,7 @@ public: // メンバ関数
 	void ChangePhase();
 
 	bool IsFinished() const { return finished_; }
+	bool IsClear() const { return clear_; }
 
 
 private: // メンバ変数
@@ -78,7 +79,7 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 	
 	std::list<Enemy*> enemies_;
-	static inline const uint32_t enemyCount = 2;
+	static inline const uint32_t enemyCount = 20;
 
 	Skydome*skydemo_ = nullptr;
 	//DEbugcamera
@@ -102,5 +103,5 @@ private: // メンバ変数
 	Phase phase_;
 
 	bool finished_ = false;
-
+	bool clear_ = false;
 };

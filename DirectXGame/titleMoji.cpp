@@ -20,4 +20,6 @@ void titleMoji::Update() {
 	worldTransform_.UpdateMatrix();
 }
 
-void titleMoji::Draw() { model_->Draw(worldTransform_, *viewProjection_); }
+void titleMoji::Draw() { 
+	model_->Draw(worldTransform_, *viewProjection_);
+}

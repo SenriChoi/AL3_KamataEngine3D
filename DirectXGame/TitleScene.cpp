@@ -20,13 +20,14 @@ void TitleScene::Initialize() {
 	Vector3 position = {-32.0f, 10.0f, 5.0f};
 	moji_->Initialize(modelTitle_, &viewProjection_, position);
 
-
+	count = 0;
 }
 
 	
 	void TitleScene::Update() {
 	moji_->Update();
-	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+	    count++;
+	if (Input::GetInstance()->PushKey(DIK_SPACE)&&(count>=30)) {
 		finished_ = true;
 	}
 }

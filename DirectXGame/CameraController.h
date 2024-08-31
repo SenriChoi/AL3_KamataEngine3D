@@ -30,7 +30,7 @@ class CameraController {
 	Rect movableArea_ = {0.0f, 100.0f, 0.0f, 100.0f};
 	Vector3 targetPosition;
 	static inline const float kInterpolationRate = 0.5f;
-	static inline const float kVelocityBias = 15.0f;
+	static inline const float kVelocityBias = 8.0f;
 	//画面内に収める
 	static inline const Rect margin = {-100, 100, -100, 100};
 };

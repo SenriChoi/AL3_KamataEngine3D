@@ -11,7 +11,7 @@ void Player::Initialize(Model* model, ViewProjection* viewProjection, const Vect
 	model_ = model;
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+	worldTransform_.rotation_.y = std::numbers::pi_v<float>;
 	viewProjection_=viewProjection;
 }
 
@@ -31,14 +31,18 @@ void Player::Update() {
 	if (turnTimer_ > 0.0f) {
 		turnTimer_ -= 1.0f / 60;
 		float destinationRotationYTable[] = {
-		    std::numbers::pi_v<float> / 2.0f,
-		    std::numbers::pi_v<float> * 3.0f / 2.0f,
+		    std::numbers::pi_v<float>-0.5f,
+		    std::numbers::pi_v<float>+0.5f,
 		};
 		// 角度取得
 		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+
+
+
 		float timeRatio = 1 - turnTimer_ / kTimeTurn;
 		float easing = timeRatio;
-		float nowRotationY = std::lerp(turnFirstRotationY_, destinationRotationY, easing);
+	float diff = destinationRotationY - turnFirstRotationY_;
+	float nowRotationY = std::lerp(turnFirstRotationY_, turnFirstRotationY_ + diff, easing);
 		worldTransform_.rotation_.y = nowRotationY;
 	}
 
@@ -53,7 +57,7 @@ if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DI
 			// 旋转
 			if (lrDirection_ != LRDirection::kRight) {
 				lrDirection_ = LRDirection::kRight;
-				turnFirstRotationY_ = std::numbers::pi_v<float>;
+				turnFirstRotationY_ = std::numbers::pi_v<float> + 0.5f;
 				turnTimer_ = 0.2f;
 			}
 			// 减速
@@ -65,7 +69,7 @@ if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DI
 			// 旋转
 			if (lrDirection_ != LRDirection::kLeft) {
 				lrDirection_ = LRDirection::kLeft;
-				turnFirstRotationY_ = 0.0f;
+				turnFirstRotationY_ = std::numbers::pi_v<float> -0.5f;
 				turnTimer_ = 0.2f;
 			}
 			// 减速
@@ -82,11 +86,13 @@ if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DI
 	}
 	// 跳跃
 	if (onGround_) {
+	
 
-		if (Input::GetInstance()->PushKey(DIK_UP)) {
+	/*	if (Input::GetInstance()->PushKey(DIK_UP)) {
 			velocity_ = Add(velocity_, {0.0f, kJumpAcceleration, 0.0f});
-		}
+		}*/
 	}
+
 }
 
 
@@ -195,6 +201,7 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 	bool hit = false;
 	MapChipField::IndexSet indexSet;
 
+
 	// 左下点
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -210,15 +217,20 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 		cameraStopY = true;
 	}
 
+	if (indexSet.yIndex == 69) {
+		playerClear = true;
+	}
    if (hit) {
 		// 检测到碰撞
 	   Vector3 offset = {0.0f, kHeight / 2.0f, 0.0f};
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(Subtract(Add(worldTransform_.translation_, info.move), offset));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndexSet(indexSet.xIndex, indexSet.yIndex);
-		float moveY = (rect.top - worldTransform_.translation_.y) + (kHeight / 2.0f) + kBlank;
+		//float moveY = (rect.top - worldTransform_.translation_.y) + (kHeight / 2.0f) + kBlank;
 
-		info.move.y = std::min(0.0f, moveY);
-		info.isLanding = true;
+		//info.move.y = std::min(0.0f, moveY);
+		//info.isLanding = true;
+	
+
    } else {
 	   info.isLanding = false;
    }
@@ -366,6 +378,7 @@ void Player::isLandingCollision(CollisionMapInfo& info) {
 			if (mapChipType == MapChipType::kBlock) {
 				hit = true;
 				cameraStopY = true;
+				
 			}
 
 			if (!hit) {

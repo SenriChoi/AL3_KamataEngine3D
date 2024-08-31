@@ -1,20 +1,19 @@
 #pragma once
 #include "DirectXCommon.h"
-#include "cassert"
-#include <algorithm>
 #include "Input.h"
 #include "Model.h"
+#include "Player.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include "Player.h"
+#include "cassert"
 #include "titleMoji.h"
+#include <algorithm>
 
-
-class TitleScene {
+class ClearScene {
 private:
 	bool finished_ = false;
 
-	Model* modelTitle_ = nullptr;
+	Model* modelClear_ = nullptr;
 	Model* modelTitlePlayer_ = nullptr;
 	ViewProjection viewProjection_;
 
@@ -23,11 +22,9 @@ private:
 	titleMoji* moji_ = nullptr;
 	Player* player_ = nullptr;
 
-	int count = 0;
-
 public:
-	TitleScene();
-	~TitleScene();
+	ClearScene();
+	~ClearScene();
 	void Initialize();
 	void Update();
 	void Draw();
